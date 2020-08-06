@@ -1,34 +1,32 @@
-import { createStore } from 'redux';
+import React from "react";
+import ReactDOM from 'react-dom';
 
-const reducer = (state = 0, action)=>{
+import { createStore, bindActionCreators } from 'redux';
 
-    switch (action.type) {
-        case 'INC':
-            return state + 1;
-        case 'DEC':
-            return state - 1;
-        default:
-            return state;
-    }
-};
+import Counter from "./counter";
+
+import reducer from "./reducer";
+import * as actions from './actions';
 
 const store = createStore(reducer);
+const { dispatch } = store;
 
-document.getElementById('inc')
-    .addEventListener('click',()=>{
-        store.dispatch({type: 'INC'});
-    });
-
-document.getElementById('dec')
-    .addEventListener('click',()=>{
-        store.dispatch({type: 'DEC'});
-    });
+const { inc, dec, rnd } =
+    bindActionCreators(actions, dispatch);
 
 const update =()=>{
-    document.getElementById('counter')
-        .innerHTML = store.getState();
+    ReactDOM.render(
+        <Counter
+            counter = {store.getState()}
+            inc={inc}
+            dec={dec}
+            rnd={()=>{
+                const value = Math.floor(Math.random()*10);
+                rnd(value);
+            }}/>,
+        document.getElementById('root'));
 };
 
+update();
 store.subscribe(update);
-
 
